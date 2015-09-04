@@ -19,8 +19,11 @@ class AppAsset extends AssetBundle
     public $baseUrl = '@web';
     public $css = [
         'css/site.css',
+        'highslide/highslide.css'
     ];
     public $js = [
+        'highslide/highslide.js',
+        'highslide/highslide.config.js'
     ];
     public $depends = [
         'yii\web\YiiAsset',

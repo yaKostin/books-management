@@ -9,6 +9,8 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\data\ActiveDataProvider;
+use yii\helpers\Html;
+use yii\helpers\Url;
 
 /**
  * DefaultController implements the CRUD actions for Book model.
@@ -88,7 +90,29 @@ class DefaultController extends Controller
 		    ],
 		    [
 		    	'class' => 'kartik\grid\ActionColumn',
-		    	'header' => 'Кнопки действий'
+		    	'header' => 'Кнопки действий',
+				'template' => '{update} {view} {delete}',
+				'buttons' => [
+				    'view' => function ($url, $model, $key) {
+				        return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', 
+				        			'#', 
+			        				[
+			        					'value' => Url::toRoute(['/books/default/view', 'id' => $model->id]),
+										'title' => 'Просмотр книги',
+										'class' => 'showModalButton'
+									]);
+				    },
+				    'delete' => function ($url, $model, $key) {
+				        return Html::a('<span class="glyphicon glyphicon-remove"></span>', 
+				        			Url::toRoute(['/books/default/delete', 'id' => $model->id]),
+						        	[
+										'title' => 'Удалить',
+										'data-confirm' => 'Действительно хотите удалить книгу?',
+										'data-method' => 'post',
+										'data-pjax' => '0',
+						        	]);
+				    },
+				],
 		    ]
 		];
 
@@ -105,8 +129,8 @@ class DefaultController extends Controller
      */
     public function actionView($id)
     {
-    	if(Yii::app()->request->isAjaxRequest) {
-        	$this->renderPartial('view', [
+    	if(Yii::$app->request->getIsAjax()) {
+        	return $this->renderPartial('view', [
             	'model' => $this->findModel($id),
         	]);
     	}
@@ -127,9 +151,16 @@ class DefaultController extends Controller
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
+        	if (Yii::$app->request->getIsAjax()) {
+        		return $this->renderPartial('create', [
+        			'model' => $model,
+        		]);
+        	}
+        	else {
+	            return $this->render('create', [
+	                'model' => $model,
+	            ]);
+        	}
         }
     }
 
