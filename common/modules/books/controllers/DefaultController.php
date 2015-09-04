@@ -3,6 +3,8 @@
 namespace common\modules\books\controllers;
 
 use Yii;
+use common\modules\books\models\Author;
+use common\modules\books\models\AuthorSearch;
 use common\modules\books\models\Book;
 use common\modules\books\models\BookSearch;
 use yii\web\Controller;
@@ -11,6 +13,8 @@ use yii\filters\VerbFilter;
 use yii\data\ActiveDataProvider;
 use yii\helpers\Html;
 use yii\helpers\Url;
+use yii\helpers\ArrayHelper;
+use yii\jui\DatePicker;
 
 /**
  * DefaultController implements the CRUD actions for Book model.
@@ -29,42 +33,21 @@ class DefaultController extends Controller
         ];
     }
 
-    /**
-     * Lists all Book models.
-     * @return mixed
-     */
-    public function actionIndexORIGINAL()
+    public function afterAction($action, $result)
     {
-        $searchModel = new BookSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
-        return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
-    }
+    	Yii::$app->getUser()->setReturnUrl(Yii::$app->request->url);
+        return parent::afterAction($action, $result);
+    } 
 
     public function actionIndex() 
     {
-    	$dataProvider = new ActiveDataProvider([
-            'query' => Book::find(),
-            'pagination' => [
-                'pageSize' => 15,
-            ],
-            'sort' => [
-                'attributes' => [
-                    'id',
-                    'name',
-                    'date',
-                    'date_create'
-                    ]
-                ]
-        ]);
-
+    	$searchModel = new BookSearch();
+    	$dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+    	$authorsArray = Author::getAuthorsArray();
+    	
         $gridColumns = [
 		    [
 		        'attribute' => 'id',
-		        'vAlign'=>'middle',
 		    ],
 		    [
 		        'attribute' => 'name',
@@ -79,7 +62,6 @@ class DefaultController extends Controller
 		        },
 		    ],
 		    [
-		        
 		        'label' => 'Автор',
 		        'value' => function ($model, $key, $index, $widget) {
 		            return $model->author->firstname . " " . $model->author->lastname;
@@ -87,9 +69,10 @@ class DefaultController extends Controller
 		    ],
 		    [
 		        'attribute' => 'date',
+		        'format' => 'date',
 		    ],
 		    [
-		    	'class' => 'kartik\grid\ActionColumn',
+		    	'class' => 'yii\grid\ActionColumn',
 		    	'header' => 'Кнопки действий',
 				'template' => '{update} {view} {delete}',
 				'buttons' => [
@@ -118,7 +101,9 @@ class DefaultController extends Controller
 
         return $this->render('index', [
         	'dataProvider' => $dataProvider,
+        	'searchModel' => $searchModel,
         	'gridColumns' => $gridColumns,
+        	'authorsArray' => $authorsArray
         	]);
     }
 
@@ -175,8 +160,11 @@ class DefaultController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+            
+            echo 'a = ' . Yii::$app->session->get('a');
+            //$this->redirect(Yii::$app->user->getReturnUrl());
         } else {
+        	Yii::$app->session->set('a', 'ffff'); 
             return $this->render('update', [
                 'model' => $model,
             ]);

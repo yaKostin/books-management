@@ -3,6 +3,7 @@
 namespace common\modules\books\models;
 
 use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "authors".
@@ -44,6 +45,15 @@ class Author extends \yii\db\ActiveRecord
             'firstname' => 'Имя',
             'lastname' => 'Фамилия',
         ];
+    }
+
+    public static function getAuthorsArray()
+    {
+        $authors = Author::find()->all();
+        return ArrayHelper::map($authors, 'id', function($model, $defaultValue) 
+            {
+                return $model->firstname . ' ' . $model->lastname;
+            });
     }
 
     /**

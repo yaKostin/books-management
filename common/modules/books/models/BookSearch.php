@@ -12,14 +12,16 @@ use common\modules\books\models\Book;
  */
 class BookSearch extends Book
 {
+    public $date_from;
+    public $date_to;
     /**
      * @inheritdoc
      */
     public function rules()
     {
         return [
-            [['id', 'date_create', 'date_update', 'author_id'], 'integer'],
-            [['name', 'preview', 'date'], 'safe'],
+            [['id', 'author_id'], 'integer'],
+            [['name', 'date_from', 'date_to'], 'safe'],
         ];
     }
 
@@ -43,8 +45,6 @@ class BookSearch extends Book
     {
         $query = Book::find();
 
-        // add conditions that should always apply here
-
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
@@ -52,22 +52,16 @@ class BookSearch extends Book
         $this->load($params);
 
         if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
-            return $dataProvider;
+            //return $dataProvider;
         }
 
-        // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'date_create' => $this->date_create,
-            'date_update' => $this->date_update,
-            'date' => $this->date,
             'author_id' => $this->author_id,
         ]);
 
-        $query->andFilterWhere(['like', 'name', $this->name])
-            ->andFilterWhere(['like', 'preview', $this->preview]);
+        $query->andFilterWhere(['like', 'name', $this->name]);
+        $query->andFilterWhere(['between', 'date', $this->date_from, $this->date_to]);
 
         return $dataProvider;
     }
