@@ -8,6 +8,7 @@ use common\modules\books\models\AuthorSearch;
 use common\modules\books\models\Book;
 use common\modules\books\models\BookSearch;
 use yii\web\Controller;
+use yii\filters\AccessControl;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\data\ActiveDataProvider;
@@ -28,6 +29,22 @@ class DefaultController extends Controller
                 'class' => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['POST'],
+                ],
+            ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'only' => ['index', 'view', 'delete', 'update'],
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                ],
+            ],
+            'verbs' => [
+                'class' => VerbFilter::className(),
+                'actions' => [
+                    'logout' => ['post'],
                 ],
             ],
         ];
@@ -55,6 +72,7 @@ class DefaultController extends Controller
 		    [
 		        'attribute' => 'preview', 
 		        'format' => 'raw',
+		        'enableSorting' => false,
 		        'value' => function ($model, $key, $index, $widget) {
 		        	return "<a href='$model->preview' class='highslide' onclick='return hs.expand(this)'>
 							    <img src='$model->preview' style='width: 60px; height: 80px;' />
@@ -62,6 +80,7 @@ class DefaultController extends Controller
 		        },
 		    ],
 		    [
+		    	'attribute' => 'author.firstname',
 		        'label' => 'Автор',
 		        'value' => function ($model, $key, $index, $widget) {
 		            return $model->author->firstname . " " . $model->author->lastname;
@@ -72,28 +91,40 @@ class DefaultController extends Controller
 		        'format' => 'date',
 		    ],
 		    [
+	            'attribute' => 'date_create',
+	            'format' => 'raw',
+                'value' => function ($model, $key, $index, $widget) {
+                    return \yii\timeago\TimeAgo::widget(['timestamp' => $model->date_create, 'language' => 'ru']);
+                }
+	        ],
+		    [
 		    	'class' => 'yii\grid\ActionColumn',
 		    	'header' => 'Кнопки действий',
 				'template' => '{update} {view} {delete}',
 				'buttons' => [
-				    'view' => function ($url, $model, $key) {
-				        return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', 
-				        			'#', 
+					'update' => function ($url, $model, $key) {
+						return Html::button('<span class="glyphicon glyphicon-pencil"></span>', 
 			        				[
-			        					'value' => Url::toRoute(['/books/default/view', 'id' => $model->id]),
-										'title' => 'Просмотр книги',
-										'class' => 'showModalButton'
+				        				'data-url' => Url::toRoute(['/books/default/update', 'id' => $model->id]), 
+										'title' => 'Изменить',
+										'class' => 'btn btn-update-book'
+									]);
+					},
+				    'view' => function ($url, $model, $key) {
+				        return Html::button('<span class="glyphicon glyphicon-eye-open"></span>', 
+			        				[
+				        				'data-url' => Url::toRoute(['/books/default/view', 'id' => $model->id]), 
+										'title' => 'Просмотреть',
+										'class' => 'btn btn-show-modal'
 									]);
 				    },
 				    'delete' => function ($url, $model, $key) {
-				        return Html::a('<span class="glyphicon glyphicon-remove"></span>', 
-				        			Url::toRoute(['/books/default/delete', 'id' => $model->id]),
-						        	[
+				        return Html::button('<span class="glyphicon glyphicon-remove"></span>', 
+				        			[
+				        				'data-url' => Url::toRoute(['/books/default/delete', 'id' => $model->id]),
 										'title' => 'Удалить',
-										'data-confirm' => 'Действительно хотите удалить книгу?',
-										'data-method' => 'post',
-										'data-pjax' => '0',
-						        	]);
+										'class' => 'btn btn-delete-book'
+				        			]);
 				    },
 				],
 		    ]
@@ -160,13 +191,13 @@ class DefaultController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            
-            echo 'a = ' . Yii::$app->session->get('a');
-            //$this->redirect(Yii::$app->user->getReturnUrl());
+            $this->redirect(Url::previous('before_update_book'));
         } else {
-        	Yii::$app->session->set('a', 'ffff'); 
+        	Url::remember(Yii::$app->request->referrer, 'before_update_book');
+        	$authorsArray = Author::getAuthorsArray();
             return $this->render('update', [
                 'model' => $model,
+                'authorsArray' => $authorsArray
             ]);
         }
     }
@@ -179,9 +210,12 @@ class DefaultController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
+        if (Yii::$app->request->getIsAjax()) {
+        	return $this->findModel($id)->delete();
+        }
+        else {
+        	return $this->redirect(['/books']);
+        }
     }
 
     /**

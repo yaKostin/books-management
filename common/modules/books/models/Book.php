@@ -3,14 +3,16 @@
 namespace common\modules\books\models;
 
 use Yii;
+use yii\behaviors\TimestampBehavior;
+use yii\db\Expression;
 
 /**
  * This is the model class for table "books".
  *
  * @property integer $id
  * @property string $name
- * @property integer $date_create
- * @property integer $date_update
+ * @property string $date_create
+ * @property string $date_update
  * @property string $preview
  * @property string $date
  * @property integer $author_id
@@ -19,6 +21,18 @@ use Yii;
  */
 class Book extends \yii\db\ActiveRecord
 {
+    public function behaviors()
+    {
+        return [
+            [
+                'class' => TimestampBehavior::className(),
+                'createdAtAttribute' => 'date_create',
+                'updatedAtAttribute' => 'date_update',
+                'value' => new Expression('NOW()'),
+            ],
+        ];
+    }
+
     /**
      * @inheritdoc
      */
@@ -34,7 +48,7 @@ class Book extends \yii\db\ActiveRecord
     {
         return [
             [['name', 'date_create', 'date_update', 'date', 'author_id'], 'required'],
-            [['date_create', 'date_update', 'author_id'], 'integer'],
+            [['author_id'], 'integer'],
             [['date'], 'safe'],
             [['name'], 'string', 'max' => 128],
             [['preview'], 'string', 'max' => 200],
@@ -50,7 +64,7 @@ class Book extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'name' => 'Название',
-            'date_create' => 'Дата добавление',
+            'date_create' => 'Дата добавления',
             'date_update' => 'Дата обновления',
             'preview' => 'Превью',
             'date' => 'Дата выхода книги',

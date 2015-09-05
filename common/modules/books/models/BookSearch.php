@@ -56,11 +56,11 @@ class BookSearch extends Book
         }
 
         $query->andFilterWhere([
-            'id' => $this->id,
             'author_id' => $this->author_id,
         ]);
 
         $query->andFilterWhere(['like', 'name', $this->name]);
+
         $query->andFilterWhere(['between', 'date', $this->date_from, $this->date_to]);
 
         return $dataProvider;

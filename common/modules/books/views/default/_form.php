@@ -14,18 +14,23 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'date_create')->textInput() ?>
+    <?= $form->field($model, 'date_create')->textInput(['readonly' => true, 
+        'value' => Yii::$app->formatter->asDateTime($model->date_create)]) ?>
 
-    <?= $form->field($model, 'date_update')->textInput() ?>
+    <?= $form->field($model, 'date_update')->textInput(['readonly' => true, 
+        'value' => $model->date_update == '0000-00-00 00:00:00' ? 'не изменялась' : 
+            Yii::$app->formatter->asDateTime($model->date_update)
+        ]) ?>
 
     <?= $form->field($model, 'preview')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'date')->textInput() ?>
+    <?= $form->field($model, 'date') ?>
 
-    <?= $form->field($model, 'author_id')->textInput() ?>
+    <?= $form->field($model, 'author_id')->textInput()->dropDownList($authorsArray) ?>
 
     <div class="form-group">
-        <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+        <?= Html::submitButton($model->isNewRecord ? 'Создать' : 'Изменить', ['class' => $model->isNewRecord ?
+            'btn btn-success' : 'btn btn-primary']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

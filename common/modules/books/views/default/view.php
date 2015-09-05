@@ -7,7 +7,7 @@ use yii\widgets\DetailView;
 /* @var $model common\modules\books\models\Book */
 
 $this->title = $model->name;
-$this->params['breadcrumbs'][] = ['label' => 'Books', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Книги', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="book-view">
@@ -29,9 +29,17 @@ $this->params['breadcrumbs'][] = $this->title;
             'id',
             'name',
             'date_create',
-            'date_update',
+            [
+                'attribute' => 'date_update',
+                'value' => ($model->date_update == '0000-00-00 00:00:00') ? 'не изменялась' : 
+                    Yii::$app->formatter->asDateTime($model->date_update),
+            ],
             'date',
-            'author.firstname',
+            [
+                'attribute' => 'author.firstname',
+                'label' => 'Автор',
+                'value' => $model->author->firstname . " " . $model->author->lastname,
+            ],
         ]
     ]) ?>
 

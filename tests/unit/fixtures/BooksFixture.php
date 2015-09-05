@@ -6,5 +6,5 @@ use yii\test\ActiveFixture;
 
 class BooksFixture extends ActiveFixture
 {
-    public $modelClass = 'common\models\Book';
+    public $modelClass = 'common\modules\books\models\Book';
 }
