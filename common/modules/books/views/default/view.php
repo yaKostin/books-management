@@ -31,8 +31,8 @@ $this->params['breadcrumbs'][] = $this->title;
             'date_create',
             [
                 'attribute' => 'date_update',
-                'value' => ($model->date_update == '0000-00-00 00:00:00') ? 'не изменялась' : 
-                    Yii::$app->formatter->asDateTime($model->date_update),
+                'format' => 'raw',
+                'value' => \yii\timeago\TimeAgo::widget(['timestamp' => $model->date_update, 'language' => 'ru']) 
             ],
             'date',
             [

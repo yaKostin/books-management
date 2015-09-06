@@ -190,7 +190,7 @@ class DefaultController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($model->load(Yii::$app->request->post()) && $model->update()) {
             $this->redirect(Url::previous('before_update_book'));
         } else {
         	Url::remember(Yii::$app->request->referrer, 'before_update_book');

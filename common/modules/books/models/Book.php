@@ -3,6 +3,7 @@
 namespace common\modules\books\models;
 
 use Yii;
+use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
 
@@ -19,16 +20,19 @@ use yii\db\Expression;
  *
  * @property Authors $author
  */
-class Book extends \yii\db\ActiveRecord
+class Book extends ActiveRecord
 {
     public function behaviors()
     {
         return [
             [
                 'class' => TimestampBehavior::className(),
-                'createdAtAttribute' => 'date_create',
-                'updatedAtAttribute' => 'date_update',
-                'value' => new Expression('NOW()'),
+                //'value' => new Expression('NOW()'),
+                'value' => new Expression('UTC_TIMESTAMP()'),
+                'attributes' => [
+                       ActiveRecord::EVENT_BEFORE_INSERT => ['date_create', 'date_update'],
+                       ActiveRecord::EVENT_BEFORE_UPDATE => ['date_update'],
+                ]
             ],
         ];
     }

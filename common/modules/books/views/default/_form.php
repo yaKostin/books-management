@@ -14,13 +14,15 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'date_create')->textInput(['readonly' => true, 
-        'value' => Yii::$app->formatter->asDateTime($model->date_create)]) ?>
+    <div class="form-group ">
+        <label class="control-label">Дата добавления</label>
+        <?= \yii\timeago\TimeAgo::widget(['timestamp' => $model->date_create, 'language' => 'ru']) ?>
+    </div>
 
-    <?= $form->field($model, 'date_update')->textInput(['readonly' => true, 
-        'value' => $model->date_update == '0000-00-00 00:00:00' ? 'не изменялась' : 
-            Yii::$app->formatter->asDateTime($model->date_update)
-        ]) ?>
+    <div class="form-group ">
+        <label class="control-label">Дата обновления</label>
+        <?= \yii\timeago\TimeAgo::widget(['timestamp' => $model->date_update, 'language' => 'ru']) ?>
+    </div>
 
     <?= $form->field($model, 'preview')->textInput(['maxlength' => true]) ?>
 

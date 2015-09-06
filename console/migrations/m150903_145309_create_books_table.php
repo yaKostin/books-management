@@ -15,8 +15,9 @@ class m150903_145309_create_books_table extends Migration
         $this->createTable('{{%books}}', [
             'id' => $this->primaryKey(),
             'name' => $this->string(128)->notNull(),
-            'date_create' => $this->timestamp()->notNull(),
-            'date_update' => $this->timestamp()->notNull(),
+            // use sql query because $this->timestamp has a bug with default value initializing
+            'date_create' => 'TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP',
+            'date_update' => 'TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP',
             'preview' => $this->string(200),
             'date' => $this->date()->notNull(),
             'author_id' => $this->integer()->notNull()

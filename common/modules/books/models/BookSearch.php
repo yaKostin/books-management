@@ -61,7 +61,13 @@ class BookSearch extends Book
 
         $query->andFilterWhere(['like', 'name', $this->name]);
 
-        $query->andFilterWhere(['between', 'date', $this->date_from, $this->date_to]);
+        //$query->andFilterWhere(['between', 'date', $this->date_from, $this->date_to]);
+        if ($this->date_from != '0000-00-00') {
+            $query->andFilterWhere(['>', 'date', $this->date_from]);
+        }
+        if ($this->date_from != '0000-00-00') {
+            $query->andFilterWhere(['<', 'date', $this->date_to]);   
+        }
 
         return $dataProvider;
     }

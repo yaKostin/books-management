@@ -16,9 +16,6 @@ return [
         'books' => [
             'class' => 'common\modules\books\Module',
         ],
-        'gridview' =>  [
-            'class' => '\kartik\grid\Module'
-        ]
     ],
     'language'=>'ru-RU',
     'sourceLanguage'=>'ru',
