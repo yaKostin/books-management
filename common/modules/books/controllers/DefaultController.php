@@ -94,7 +94,7 @@ class DefaultController extends Controller
 	            'attribute' => 'date_create',
 	            'format' => 'raw',
                 'value' => function ($model, $key, $index, $widget) {
-                    return \yii\timeago\TimeAgo::widget(['timestamp' => $model->date_create, 'language' => 'ru']);
+                    return \yii\timeago\TimeAgo::widget(['timestamp' => gmdate("Y-m-d\TH:i:s\Z", strtotime($model->date_create)), 'language' => 'ru']);
                 }
 	        ],
 		    [

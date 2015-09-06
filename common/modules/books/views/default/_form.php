@@ -16,12 +16,12 @@ use yii\widgets\ActiveForm;
 
     <div class="form-group ">
         <label class="control-label">Дата добавления</label>
-        <?= \yii\timeago\TimeAgo::widget(['timestamp' => $model->date_create, 'language' => 'ru']) ?>
+        <?= \yii\timeago\TimeAgo::widget(['timestamp' => gmdate("Y-m-d\TH:i:s\Z", strtotime($model->date_create)), 'language' => 'ru']) ?>
     </div>
 
     <div class="form-group ">
         <label class="control-label">Дата обновления</label>
-        <?= \yii\timeago\TimeAgo::widget(['timestamp' => $model->date_update, 'language' => 'ru']) ?>
+        <?= \yii\timeago\TimeAgo::widget(['timestamp' => gmdate("Y-m-d\TH:i:s\Z", strtotime($model->date_update)), 'language' => 'ru']) ?>
     </div>
 
     <?= $form->field($model, 'preview')->textInput(['maxlength' => true]) ?>

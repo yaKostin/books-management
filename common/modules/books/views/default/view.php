@@ -29,11 +29,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'id',
             'name',
             'date_create',
-            [
-                'attribute' => 'date_update',
-                'format' => 'raw',
-                'value' => \yii\timeago\TimeAgo::widget(['timestamp' => $model->date_update, 'language' => 'ru']) 
-            ],
+            'date_update',
             'date',
             [
                 'attribute' => 'author.firstname',

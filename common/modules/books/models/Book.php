@@ -27,8 +27,7 @@ class Book extends ActiveRecord
         return [
             [
                 'class' => TimestampBehavior::className(),
-                //'value' => new Expression('NOW()'),
-                'value' => new Expression('UTC_TIMESTAMP()'),
+                'value' => new Expression('CURRENT_TIMESTAMP()'),
                 'attributes' => [
                        ActiveRecord::EVENT_BEFORE_INSERT => ['date_create', 'date_update'],
                        ActiveRecord::EVENT_BEFORE_UPDATE => ['date_update'],
